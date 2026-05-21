@@ -5,6 +5,9 @@ import HandDetectorModule as hdm
 import numpy as np
 import os
 
+eraserThickness = 50
+drawthickness = 15
+
 
 folderpath = "Headers"
 mylist = os.listdir(folderpath)
@@ -22,6 +25,8 @@ detector = hdm.handDetector(trackcon=0.75)
 header = overlaylist[0]
 
 drawcolor = (0,0,255)
+
+imgcanvas = np.zeros((720,1280,3),np.uint8)
 
 while True:
     success,img = cap.read()
@@ -55,10 +60,26 @@ while True:
                 elif 900 < x1 < 1150:
                     header = overlaylist[4]
                     drawcolor = (0,0,0)
+
+                
+        if fingers[1] and fingers[2] == False:
+            cv.circle(img,(x1,y1),15,drawcolor,cv.FILLED)
+            if xp == 0 and yp == 0:
+                xp,yp = x1,y1
+            if drawcolor == (0,0,0):
+                cv.line(img,(xp,yp),(x1,y1),drawcolor,eraserThickness)
+                cv.line(imgcanvas,(xp,yp),(x1,y1),drawcolor,eraserThickness)
+            else:
+                cv.line(img,(xp,yp),(x1,y1),drawcolor,drawthickness)
+                cv.line(imgcanvas,(xp,yp),(x1,y1),drawcolor,drawthickness)
+
+        xp,yp = x1,y1
+
                 
     img[0:125,0:1280] = header
 
     cv.imshow("Image",img)
+    cv.imshow("Canvas",imgcanvas)
     if cv.waitKey(1) == ord('q'):
         break
 
