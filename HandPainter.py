@@ -78,8 +78,14 @@ while True:
                 
     img[0:125,0:1280] = header
 
+    imggray = cv.cvtColor(imgcanvas,cv.COLOR_BGR2GRAY)
+    _,imgInv = cv.threshold(imggray,50,255,cv.THRESH_BINARY_INV)
+    imgInv = cv.cvtColor(imgInv,cv.COLOR_GRAY2BGR)
+    img = cv.bitwise_and(img,imgInv)
+    img = cv.bitwise_or(img,imgcanvas)
+
     cv.imshow("Image",img)
-    cv.imshow("Canvas",imgcanvas)
+    # cv.imshow("Canvas",imgcanvas)
     if cv.waitKey(1) == ord('q'):
         break
 
