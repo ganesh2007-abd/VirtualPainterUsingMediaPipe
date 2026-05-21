@@ -19,15 +19,16 @@ cap.set(3,1280)
 cap.set(4,720)
 
 detector = hdm.handDetector(trackcon=0.75)
+header = overlaylist[0]
+
+drawcolor = (0,0,255)
 
 while True:
     success,img = cap.read()
     if not success:
         break
     img = cv.flip(img,1)
-    img[0:125,0:1280] = overlaylist[0]
-
-
+    
     img = detector.findHands(img)
     lmlist = detector.findposition(img,False)
 
@@ -37,6 +38,25 @@ while True:
 
         fingers = detector.fingerUp()
         # print(fingers)
+
+        if fingers[1] and fingers[2]:
+            xp,yp = 0,0
+            cv.rectangle(img,(x1,y1-25),(x2,y2+25),drawcolor,cv.FILLED)
+            if y1<140:
+                if 0 < x1 < 250:
+                    header = overlaylist[1]
+                    drawcolor = (0,0,255)
+                elif 300<x1<550:
+                    header = overlaylist[2]
+                    drawcolor = (0,255,0)
+                elif 600<x1<850:
+                    header = overlaylist[3]
+                    drawcolor = (255,0,0)
+                elif 900 < x1 < 1150:
+                    header = overlaylist[4]
+                    drawcolor = (0,0,0)
+                
+    img[0:125,0:1280] = header
 
     cv.imshow("Image",img)
     if cv.waitKey(1) == ord('q'):
